@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -44,12 +46,14 @@ public class RemonClient extends JFrame {
 
 	private JTabbedPane tabbedPane = new JTabbedPane();
 
-	public RemonClient(GraphicsConfiguration gc) {
-		super("Remon", gc);
+	private boolean ssl;
+	private GraphicsConfiguration gc ;
+	public RemonClient(GraphicsConfiguration gc){
+		super(gc);
 	}
-
-	public RemonClient() {
+	public RemonClient(boolean ssl) {
 		super("Remon");
+		this.ssl = ssl;
 		initComponents();
 	}
 
@@ -127,7 +131,13 @@ public class RemonClient extends JFrame {
 	public void connect(String hostName, int port) {
 
 		try {
-			socket = new Socket(hostName, port);
+			if (ssl){
+				SSLContext sslContext = SSLContext.getDefault();
+		        SocketFactory sf = sslContext.getSocketFactory();
+				socket = sf.createSocket(hostName, port);
+			} else {
+				socket = new Socket(hostName, port);
+			}
 			JPanel panel = new ImagePanel();
 			JScrollPane scrollPane = new JScrollPane(panel);
 

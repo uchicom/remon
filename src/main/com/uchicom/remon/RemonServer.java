@@ -6,10 +6,12 @@ package com.uchicom.remon;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+
+import javax.net.ServerSocketFactory;
+import javax.net.ssl.SSLContext;
 
 import com.uchicom.remon.runnable.CommandReceiver;
 import com.uchicom.remon.runnable.ImageSender;
@@ -25,19 +27,27 @@ public class RemonServer {
 
 	private String hostName;
 	private int port;
+	private boolean ssl;
 
 	/**
 	 *
 	 */
-	public RemonServer(String hostName, int port) {
+	public RemonServer(String hostName, int port, boolean ssl) {
 		this.hostName = hostName;
 		this.port = port;
+		this.ssl = ssl;
 	}
 
 	public void execute() {
-		ServerSocket server;
+		ServerSocket server = null;
 		try {
-			server = new ServerSocket();
+			if (ssl) {
+		        SSLContext sslContext = SSLContext.getDefault();
+		        ServerSocketFactory ssf = sslContext.getServerSocketFactory();
+				server = ssf.createServerSocket();
+			} else {
+				server = new ServerSocket();
+			}
 			server.bind(new InetSocketAddress(hostName, port));
 			print();
 			while (true) {
@@ -52,7 +62,7 @@ public class RemonServer {
 				sender.start();
 
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

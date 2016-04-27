@@ -19,6 +19,7 @@ public class Main {
 		boolean server = false;
 		boolean remote = false;
 		boolean through = false;
+		boolean ssl = false;
 		String host = null;
 		int port = 10000;
 		int sendPort = 10000;
@@ -62,11 +63,14 @@ public class Main {
 					System.out.println("port error");
 				}
 				break;
+			case "-ssl":
+				ssl = true;
+				break;
 
 			}
 		}
 		if (server) {
-			RemonServer remonServer = new RemonServer(host, port);
+			RemonServer remonServer = new RemonServer(host, port, ssl);
 			remonServer.execute();
 		} else if (remote) {
 			RemonRemote remonRemote = new RemonRemote(host, port);
@@ -75,7 +79,7 @@ public class Main {
 			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort);
 			remonThrough.execute();
 		} else {
-			RemonClient client = new RemonClient();
+			RemonClient client = new RemonClient(ssl);
 			client.setPreferredSize(new Dimension(320, 320));
 			client.pack();
 			client.setVisible(true);
