@@ -4,6 +4,8 @@
 package com.uchicom.remon;
 
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -30,7 +32,6 @@ import javax.swing.JTabbedPane;
 
 import com.uchicom.remon.action.CloseAction;
 import com.uchicom.remon.action.ConnectAction;
-import com.uchicom.remon.action.FullScreenAction;
 import com.uchicom.remon.runnable.ImageReceiver;
 import com.uchicom.remon.util.ImagePanel;
 
@@ -66,9 +67,9 @@ public class RemonClient extends JFrame {
 		menuItem = new JMenuItem(new CloseAction(this));
 		menu.add(menuItem);
 		menuBar.add(menu);
-		menu = new JMenu("表示");
-		menuItem = new JMenuItem(new FullScreenAction(this));
-		menu.add(menuItem);
+//		menu = new JMenu("表示");
+//		menuItem = new JMenuItem(new FullScreenAction(this));
+//		menu.add(menuItem);
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
 
@@ -197,5 +198,22 @@ public class RemonClient extends JFrame {
 
 	public void close() {
 		tabbedPane.remove(tabbedPane.getSelectedIndex());
+	}
+
+	public void fullScreen() {
+
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice device = ge.getDefaultScreenDevice();
+		RemonClient client = new RemonClient(device.getDefaultConfiguration());
+		try {
+			client.setVisible(false);
+			client.setUndecorated(true);
+
+			device.setFullScreenWindow(client);
+			client.setVisible(true);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			device.setFullScreenWindow(null);
+		}
 	}
 }
