@@ -28,14 +28,18 @@ public class RemonServer {
 	private String hostName;
 	private int port;
 	private boolean ssl;
+	private boolean udp;
+	private boolean multicast;
 
 	/**
 	 *
 	 */
-	public RemonServer(String hostName, int port, boolean ssl) {
+	public RemonServer(String hostName, int port, boolean ssl, boolean udp, boolean multicast) {
 		this.hostName = hostName;
 		this.port = port;
 		this.ssl = ssl;
+		this.udp = udp;
+		this.multicast = multicast;
 	}
 
 	public void execute() {

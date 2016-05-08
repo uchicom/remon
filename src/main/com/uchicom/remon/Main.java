@@ -20,6 +20,8 @@ public class Main {
 		boolean remote = false;
 		boolean through = false;
 		boolean ssl = false;
+		boolean udp = false;
+		boolean multicast = false;
 		String host = null;
 		int port = 10000;
 		int sendPort = 10000;
@@ -66,11 +68,17 @@ public class Main {
 			case "-ssl":
 				ssl = true;
 				break;
+			case "-udp":
+				udp = true;
+				break;
+			case "-multicast":
+				multicast = true;
+				break;
 
 			}
 		}
 		if (server) {
-			RemonServer remonServer = new RemonServer(host, port, ssl);
+			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast);
 			remonServer.execute();
 		} else if (remote) {
 			RemonRemote remonRemote = new RemonRemote(host, port);
