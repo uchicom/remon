@@ -32,5 +32,4 @@ public class FullScreenAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		client.fullScreen();
 	}
-
 }
