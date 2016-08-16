@@ -5,8 +5,8 @@ package com.uchicom.remon.runnable;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
+import java.util.zip.GZIPInputStream;
 
 import com.uchicom.remon.Constants;
 import com.uchicom.remon.RemonClient;
@@ -48,7 +48,7 @@ public class ImageReceiver implements Runnable {
 		byte[] rgbs = null;
 		int width = 0;
 		int height = 0;
-		try (InputStream gis = (socket.getInputStream())) {
+		try (GZIPInputStream gis = new GZIPInputStream(socket.getInputStream())) {
 			while (!socket.isInputShutdown()) {
 				long transfer = 0;
 				int index = 0;

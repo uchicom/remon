@@ -7,8 +7,8 @@ import java.awt.AWTException;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.Socket;
+import java.util.zip.GZIPOutputStream;
 
 import com.uchicom.remon.Constants;
 import com.uchicom.remon.RemonRobot;
@@ -39,7 +39,7 @@ public class ImageSender implements Runnable {
 	public void run() {
 		Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 
-		try (OutputStream gos = (socket.getOutputStream())) {
+		try (GZIPOutputStream gos = new GZIPOutputStream(socket.getOutputStream(), true)) {
 			RemonRobot robot = new RemonRobot();
 			int size = screenRect.width * screenRect.height;
 			int[][] image = new int[2][size];
