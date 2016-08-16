@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.uchicom.remon.Constants;
 
@@ -25,15 +26,20 @@ public class ImagePanel extends JPanel {
 	private long startTime;
 
 	public void setImage(BufferedImage image, int x, int y, long transfer) {
-		if (this.image == null) {
-			this.image = image;
-			startTime = System.currentTimeMillis();
-			setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
-		} else {
-			this.image.getGraphics().drawImage(image, x, y, this);
-			this.transfer += transfer;
-		}
-		repaint();
+
+		SwingUtilities.invokeLater( new Runnable() {
+			public void run() {
+				if (ImagePanel.this.image == null) {
+					ImagePanel.this.image = image;
+					startTime = System.currentTimeMillis();
+					setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
+				} else {
+					ImagePanel.this.image.getGraphics().drawImage(image, x, y, ImagePanel.this);
+					ImagePanel.this.transfer += transfer;
+				}
+				repaint();
+			}
+		});
 	}
 
 	@Override

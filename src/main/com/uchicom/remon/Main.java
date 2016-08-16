@@ -5,6 +5,8 @@ package com.uchicom.remon;
 
 import java.awt.Dimension;
 
+import javax.swing.SwingUtilities;
+
 /**
  * メイン処理.
  *
@@ -77,6 +79,7 @@ public class Main {
 
 			}
 		}
+		final boolean ssl2 = ssl;
 		if (server) {
 			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast);
 			remonServer.execute();
@@ -87,10 +90,14 @@ public class Main {
 			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort);
 			remonThrough.execute();
 		} else {
-			RemonClient client = new RemonClient(ssl);
-			client.setPreferredSize(new Dimension(320, 320));
-			client.pack();
-			client.setVisible(true);
+			SwingUtilities.invokeLater( new Runnable() {
+				public void run() {
+				RemonClient client = new RemonClient(ssl2);
+				client.setPreferredSize(new Dimension(320, 320));
+				client.pack();
+				client.setVisible(true);
+				}
+			});
 		}
 	}
 

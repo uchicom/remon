@@ -155,8 +155,8 @@ public class ImageSender implements Runnable {
 			}
 		}
 		//height探索y2
-		LAB: for (int i = height - 1; i > y2; i--) {
-			for (int j = width - 1; j > x2; j--) {
+		LAB: for (int i = height - 1; i >= y2; i--) {
+			for (int j = width - 1; j >= x; j--) {
 				int index = i * width + j;
 				if (oldImage[index] != newImage[index]) {
 					y2 = i;
@@ -169,7 +169,7 @@ public class ImageSender implements Runnable {
 			}
 		}
 		//width探索
-		for (int i = y; i <= y2; i++) {
+		for (int i = y; i < y2; i++) {
 			for (int j = width - 1; j > x2; j--) {
 				int index = i * width + j;
 				if (oldImage[index] != newImage[index]) {
