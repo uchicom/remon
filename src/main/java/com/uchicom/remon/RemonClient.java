@@ -3,6 +3,7 @@
  */
 package com.uchicom.remon;
 
+import java.awt.Color;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -34,6 +35,7 @@ import com.uchicom.remon.action.CloseAction;
 import com.uchicom.remon.action.ConnectAction;
 import com.uchicom.remon.runnable.ImageReceiver;
 import com.uchicom.remon.util.ImagePanel;
+import com.uchicom.remon.util.ImageUtil;
 
 /**
  * ローカルクライアント.<br/>
@@ -59,6 +61,7 @@ public class RemonClient extends JFrame {
 	}
 
 	public void initComponents() {
+		setIconImage(ImageUtil.getImageIcon("images/icon.png").getImage());
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		JMenuBar menuBar = new JMenuBar();
 		JMenu menu = new JMenu("接続");
@@ -74,7 +77,6 @@ public class RemonClient extends JFrame {
 		setJMenuBar(menuBar);
 
 		tabbedPane.enableInputMethods(false);
-
 		getContentPane().add(tabbedPane);
 
 		tabbedPane.addKeyListener(new KeyListener() {
@@ -216,4 +218,5 @@ public class RemonClient extends JFrame {
 			device.setFullScreenWindow(null);
 		}
 	}
+
 }
