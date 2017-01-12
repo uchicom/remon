@@ -3,7 +3,6 @@
  */
 package com.uchicom.remon;
 
-import java.awt.Color;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -114,7 +113,7 @@ public class RemonClient extends JFrame {
 
 	public void write(int command, int... attributes) {
 		try {
-			if (!socket.isOutputShutdown()) {
+			if (!socket.isClosed() && !socket.isOutputShutdown()) {
 				os.write(command);
 				for (int attribute : attributes) {
 
