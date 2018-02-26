@@ -3,6 +3,7 @@
  */
 package com.uchicom.remon;
 
+import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -14,10 +15,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
@@ -26,7 +28,6 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
@@ -48,6 +49,7 @@ public class RemonClient extends JFrame {
 
 	private JTabbedPane tabbedPane = new JTabbedPane();
 
+	private Map<JScrollPane, ImageReceiver> receiverMap = new HashMap<>();
 	private boolean ssl;
 	private GraphicsConfiguration gc ;
 	public RemonClient(GraphicsConfiguration gc){
@@ -99,14 +101,6 @@ public class RemonClient extends JFrame {
 
 	}
 
-	public void setImage(BufferedImage bufferedImage, int x, int y, long transfer) {
-		if (bufferedImage == null)
-			return;
-		JScrollPane scrollPane = (JScrollPane) tabbedPane.getSelectedComponent();
-		((ImagePanel) scrollPane.getViewport().getView()).setImage(bufferedImage, x, y, transfer);
-
-	}
-
 	Socket socket = null;
 	OutputStream os = null;
 	byte[] bytes = new byte[3];
@@ -140,7 +134,7 @@ public class RemonClient extends JFrame {
 			} else {
 				socket = new Socket(hostName, port);
 			}
-			JPanel panel = new ImagePanel();
+			ImagePanel panel = new ImagePanel();
 			JScrollPane scrollPane = new JScrollPane(panel);
 
 			panel.addMouseListener(new MouseAdapter() {
@@ -186,10 +180,11 @@ public class RemonClient extends JFrame {
 			});
 
 			tabbedPane.addTab(hostName + "(" + port + ")", scrollPane);
-
-			Thread receiver = new Thread(new ImageReceiver(socket, this));
-			receiver.setDaemon(true);
-			receiver.start();
+			ImageReceiver receiver = new ImageReceiver(socket, panel);
+			receiverMap.put(scrollPane, receiver);
+			Thread thread = new Thread(receiver);
+			thread.setDaemon(true);
+			thread.start();
 			os = socket.getOutputStream();
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(this, e2.getMessage());
@@ -198,7 +193,11 @@ public class RemonClient extends JFrame {
 	}
 
 	public void close() {
-		tabbedPane.remove(tabbedPane.getSelectedIndex());
+		Component component = tabbedPane.getSelectedComponent();
+		ImageReceiver receiver = receiverMap.get(component);
+		tabbedPane.remove(component);
+		receiverMap.remove(component);
+		receiver.setStoped(true);
 	}
 
 	public void fullScreen() {

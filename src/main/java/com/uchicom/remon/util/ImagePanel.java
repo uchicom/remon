@@ -25,9 +25,24 @@ public class ImagePanel extends JPanel {
 	private long transfer;
 	private long startTime;
 
+	public void init(int width, int height) {
+		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		setPreferredSize(new Dimension(width, height));
+	}
+
+	public void setImage(int x, int y, int w, int h, int[] data, int offset, int scansize) {
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				image.setRGB(x, y, w, h, data, offset, scansize);
+				repaint();
+			}
+		});
+	}
+
 	public void setImage(BufferedImage image, int x, int y, long transfer) {
 
-		SwingUtilities.invokeLater( new Runnable() {
+		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				if (ImagePanel.this.image == null) {
 					ImagePanel.this.image = image;
@@ -43,10 +58,15 @@ public class ImagePanel extends JPanel {
 	}
 
 	@Override
+	public void update(Graphics g) {
+		paint(g);
+	}
+
+	@Override
 	public void paint(Graphics g) {
 		g.drawImage(image, 0, 0, this);
-		g.setXORMode(Color.WHITE);
 		if (Constants.DEBUG) {
+			g.setXORMode(Color.WHITE);
 			g.drawString(transfer * 1000d / 8 / 1024 / (System.currentTimeMillis() - startTime) + "[KBps]", 0, 10);
 		}
 	}
