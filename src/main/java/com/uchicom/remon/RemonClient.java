@@ -34,6 +34,7 @@ import javax.swing.JTabbedPane;
 import com.uchicom.remon.action.CloseAction;
 import com.uchicom.remon.action.ConnectAction;
 import com.uchicom.remon.runnable.ImageReceiver;
+import com.uchicom.remon.runnable.MonoReceiver;
 import com.uchicom.remon.util.ImagePanel;
 import com.uchicom.remon.util.ImageUtil;
 
@@ -47,17 +48,24 @@ import com.uchicom.remon.util.ImageUtil;
  */
 public class RemonClient extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JTabbedPane tabbedPane = new JTabbedPane();
 
 	private Map<JScrollPane, ImageReceiver> receiverMap = new HashMap<>();
 	private boolean ssl;
+	private boolean mono;
 	private GraphicsConfiguration gc ;
 	public RemonClient(GraphicsConfiguration gc){
 		super(gc);
 	}
-	public RemonClient(boolean ssl) {
+	public RemonClient(boolean ssl, boolean mono) {
 		super("Remon");
 		this.ssl = ssl;
+		this.mono = mono;
 		initComponents();
 	}
 
@@ -180,7 +188,8 @@ public class RemonClient extends JFrame {
 			});
 
 			tabbedPane.addTab(hostName + "(" + port + ")", scrollPane);
-			ImageReceiver receiver = new ImageReceiver(socket, panel);
+			ImageReceiver receiver = mono ? new MonoReceiver(socket, panel) : new ImageReceiver(socket, panel);
+
 			receiverMap.put(scrollPane, receiver);
 			Thread thread = new Thread(receiver);
 			thread.setDaemon(true);

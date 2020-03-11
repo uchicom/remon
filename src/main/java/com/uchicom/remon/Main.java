@@ -24,6 +24,7 @@ public class Main {
 		boolean ssl = false;
 		boolean udp = false;
 		boolean multicast = false;
+		boolean mono = false;
 		String host = null;
 		int port = 10000;
 		int sendPort = 10000;
@@ -76,27 +77,29 @@ public class Main {
 			case "-multicast":
 				multicast = true;
 				break;
+			case "-mono":
+				mono = true;
+				break;
 
 			}
 		}
 		final boolean ssl2 = ssl;
 		if (server) {
-			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast);
+			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast, mono);
 			remonServer.execute();
 		} else if (remote) {
-			RemonRemote remonRemote = new RemonRemote(host, port);
+			RemonRemote remonRemote = new RemonRemote(host, port, mono);
 			remonRemote.execute();
 		} else if (through) {
 			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort);
 			remonThrough.execute();
 		} else {
-			SwingUtilities.invokeLater( new Runnable() {
-				public void run() {
-				RemonClient client = new RemonClient(ssl2);
+			final boolean mono2 = mono;
+			SwingUtilities.invokeLater(() -> {
+				RemonClient client = new RemonClient(ssl2, mono2);
 				client.setPreferredSize(new Dimension(320, 320));
 				client.pack();
 				client.setVisible(true);
-				}
 			});
 		}
 	}

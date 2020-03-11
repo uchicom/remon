@@ -15,6 +15,7 @@ import javax.net.ssl.SSLContext;
 
 import com.uchicom.remon.runnable.CommandReceiver;
 import com.uchicom.remon.runnable.ImageSender;
+import com.uchicom.remon.runnable.MonoSender;
 
 /**
  * リモートサーバ.<br/>
@@ -28,26 +29,28 @@ public class RemonServer {
 	private String hostName;
 	private int port;
 	private boolean ssl;
-	private boolean udp;
-	private boolean multicast;
+//	private boolean udp;
+//	private boolean multicast;
+	private boolean mono;
 
 	/**
 	 *
 	 */
-	public RemonServer(String hostName, int port, boolean ssl, boolean udp, boolean multicast) {
+	public RemonServer(String hostName, int port, boolean ssl, boolean udp, boolean multicast, boolean mono) {
 		this.hostName = hostName;
 		this.port = port;
 		this.ssl = ssl;
-		this.udp = udp;
-		this.multicast = multicast;
+//		this.udp = udp;
+//		this.multicast = multicast;
+		this.mono = mono;
 	}
 
 	public void execute() {
 		ServerSocket server = null;
 		try {
 			if (ssl) {
-		        SSLContext sslContext = SSLContext.getDefault();
-		        ServerSocketFactory ssf = sslContext.getServerSocketFactory();
+				SSLContext sslContext = SSLContext.getDefault();
+				ServerSocketFactory ssf = sslContext.getServerSocketFactory();
 				server = ssf.createServerSocket();
 			} else {
 				server = new ServerSocket();
@@ -61,7 +64,7 @@ public class RemonServer {
 				Thread receiver = new Thread(new CommandReceiver(socket));
 				receiver.setDaemon(true);
 				receiver.start();
-				Thread sender = new Thread(new ImageSender(socket));
+				Thread sender = new Thread(mono ? new MonoSender(socket) : new ImageSender(socket));
 				sender.setDaemon(true);
 				sender.start();
 
