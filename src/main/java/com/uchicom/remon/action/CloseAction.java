@@ -17,7 +17,11 @@ import com.uchicom.remon.RemonClient;
  */
 public class CloseAction extends AbstractAction {
 
-	RemonClient client;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private RemonClient client;
 
 	/**
 	 * @param name
@@ -33,7 +37,6 @@ public class CloseAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		client.close();
-
 	}
 
 }

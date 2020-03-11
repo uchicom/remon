@@ -18,7 +18,12 @@ import com.uchicom.remon.RemonClient;
  */
 public class FullScreenAction extends AbstractAction {
 
-	RemonClient client;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private RemonClient client;
 
 	/**
 	 * @param name

@@ -21,6 +21,11 @@ import com.uchicom.remon.Constants;
  */
 public class ImagePanel extends JPanel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private BufferedImage image;
 	private long transfer;
 	private long startTime;
