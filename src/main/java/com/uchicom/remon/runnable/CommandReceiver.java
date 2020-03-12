@@ -21,6 +21,15 @@ public class CommandReceiver implements Runnable {
 
 	private Socket socket;
 
+	private boolean key;
+
+	private boolean mouse;
+
+	private int imageKind;
+	private int sendKind;
+	private int extractKind;
+	private int delay;
+
 	/**
 	 *
 	 */
@@ -28,7 +37,9 @@ public class CommandReceiver implements Runnable {
 		this.socket = socket;
 	}
 
-	/* (非 Javadoc)
+	/*
+	 * (非 Javadoc)
+	 * 
 	 * @see java.lang.Runnable#run()
 	 */
 	@Override
@@ -38,45 +49,73 @@ public class CommandReceiver implements Runnable {
 			byte[] bytes = new byte[3];
 			while (!socket.isInputShutdown()) {
 				// この部分をバイトストリームに変える。コマンドは一バイト目の文字列で判別。
-				//ここでコマンドを復元
+				// ここでコマンドを復元
 				switch (is.read()) {
+				case Constants.COMMAND_KEY_FLAG:
+					key = getBoolean(is.read());
+					break;
 				case Constants.COMMAND_KEY_PRESS:
 					is.read(bytes, 0, 3);
-					robot.keyPress(getInt(bytes));
+					if (key) {
+						robot.keyPress(getInt(bytes));
+					}
 					break;
 				case Constants.COMMAND_KEY_RELEASE:
 					is.read(bytes, 0, 3);
-					robot.keyRelease(getInt(bytes));
+					if (key) {
+						robot.keyRelease(getInt(bytes));
+					}
+					break;
+				case Constants.COMMAND_MOUSE_FLAG:
+					mouse = getBoolean(is.read());
 					break;
 				case Constants.COMMAND_MOUSE_MOVE:
 					is.read(bytes, 0, 3);
 					int x = getInt(bytes);
 					is.read(bytes, 0, 3);
 					int y = getInt(bytes);
-					robot.mouseMove(x, y);
+					if (mouse) {
+						robot.mouseMove(x, y);
+					}
 					break;
 				case Constants.COMMAND_MOUSE_PRESS:
 					is.read(bytes, 0, 3);
 					int max = getInt(bytes);
 					is.read(bytes, 0, 3);
 					int modifier = getInt(bytes);
-					for (int i = 0; i < max; i++) {
-						robot.mousePress(modifier);
+					if (mouse) {
+						for (int i = 0; i < max; i++) {
+							robot.mousePress(modifier);
+						}
 					}
 					break;
 				case Constants.COMMAND_MOUSE_RELEASE:
 					is.read(bytes, 0, 3);
-					robot.mouseRelease(getInt(bytes));
+					if (mouse) {
+						robot.mouseRelease(getInt(bytes));
+					}
 					break;
 				case Constants.COMMAND_MOUSE_WHEEL:
 					is.read(bytes, 0, 3);
-					robot.mouseWheel(getInt(bytes));
+					if (mouse) {
+						robot.mouseWheel(getInt(bytes));
+					}
 					break;
-				case Constants.COMMAND_IMAGE_1BYTE:
-					//ここで画像送信を切り替える処理
+				case Constants.COMMAND_IMAGE_KIND:
+					is.read(bytes, 0, 3);
+					imageKind = getInt(bytes);
 					break;
-				case Constants.COMMAND_IMAGE_3BYTE:
-					//
+				case Constants.COMMAND_SEND_KIND:
+					is.read(bytes, 0, 3);
+					sendKind = getInt(bytes);
+					break;
+				case Constants.COMMAND_EXTRACT_KIND:
+					is.read(bytes, 0, 3);
+					extractKind = getInt(bytes);
+					break;
+				case Constants.COMMAND_DELAY:
+					is.read(bytes, 0, 3);
+					delay = getInt(bytes);
 					break;
 				}
 			}
@@ -88,7 +127,16 @@ public class CommandReceiver implements Runnable {
 	}
 
 	public int getInt(byte[] bytes) {
-		return ((bytes[0] & 0xFF) |
-				((bytes[1] & 0xFF) << 8) | ((bytes[2] & 0xFF) << 16));
+		return ((bytes[0] & 0xFF) | ((bytes[1] & 0xFF) << 8) | ((bytes[2] & 0xFF) << 16));
+	}
+	public boolean getBoolean(int value) {
+		return value != 0;
+	}
+
+	public int getImageKind() {
+		return imageKind;
+	}
+	public int getDelay() {
+		return delay;
 	}
 }

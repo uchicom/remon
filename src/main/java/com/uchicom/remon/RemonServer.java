@@ -15,7 +15,8 @@ import javax.net.ssl.SSLContext;
 
 import com.uchicom.remon.runnable.CommandReceiver;
 import com.uchicom.remon.runnable.ImageSender;
-import com.uchicom.remon.runnable.MonoSender;
+import com.uchicom.remon.runnable.Sender;
+import com.uchicom.remon.type.AnalysisStrategy;
 
 /**
  * リモートサーバ.<br/>
@@ -61,10 +62,11 @@ public class RemonServer {
 				Socket socket = server.accept();
 
 				print();
-				Thread receiver = new Thread(new CommandReceiver(socket));
-				receiver.setDaemon(true);
-				receiver.start();
-				Thread sender = new Thread(mono ? new MonoSender(socket) : new ImageSender(socket));
+				CommandReceiver receiver = new CommandReceiver(socket);
+				Thread receiverT = new Thread(receiver);
+				receiverT.setDaemon(true);
+				receiverT.start();
+				Thread sender = new Thread(mono ? new Sender(socket, receiver) : new ImageSender(socket));
 				sender.setDaemon(true);
 				sender.start();
 

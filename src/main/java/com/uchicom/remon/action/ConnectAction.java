@@ -41,7 +41,7 @@ public class ConnectAction extends AbstractAction {
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String hostPort = JOptionPane.showInputDialog(client, "接続先の「ホスト:ポート」を入力してください。", "localhost 10000");
+		String hostPort = JOptionPane.showInputDialog(client, "接続先の「ホスト:ポート」を入力してください。", "localhost:10000");
 		if (hostPort != null) {
 			String[] splits = hostPort.split(":");
 			if (splits.length > 1) {

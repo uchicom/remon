@@ -7,6 +7,7 @@ import java.awt.Component;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -23,18 +24,22 @@ import java.util.Map;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
+import javax.swing.AbstractAction;
+import javax.swing.ButtonGroup;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
 import com.uchicom.remon.action.CloseAction;
 import com.uchicom.remon.action.ConnectAction;
 import com.uchicom.remon.runnable.ImageReceiver;
-import com.uchicom.remon.runnable.MonoReceiver;
+import com.uchicom.remon.runnable.Receiver;
 import com.uchicom.remon.util.ImagePanel;
 import com.uchicom.remon.util.ImageUtil;
 
@@ -56,13 +61,18 @@ public class RemonClient extends JFrame {
 
 	private JTabbedPane tabbedPane = new JTabbedPane();
 
+	private JCheckBoxMenuItem checkbox;
+	private JCheckBoxMenuItem checkbox2;
+
 	private Map<JScrollPane, ImageReceiver> receiverMap = new HashMap<>();
 	private boolean ssl;
 	private boolean mono;
-	private GraphicsConfiguration gc ;
-	public RemonClient(GraphicsConfiguration gc){
+	private GraphicsConfiguration gc;
+
+	public RemonClient(GraphicsConfiguration gc) {
 		super(gc);
 	}
+
 	public RemonClient(boolean ssl, boolean mono) {
 		super("Remon");
 		this.ssl = ssl;
@@ -83,6 +93,104 @@ public class RemonClient extends JFrame {
 //		menu = new JMenu("表示");
 //		menuItem = new JMenuItem(new FullScreenAction(this));
 //		menu.add(menuItem);
+		menuBar.add(menu);
+		menu = new JMenu("画像");
+		ButtonGroup group = new ButtonGroup();
+		JRadioButtonMenuItem radio = new JRadioButtonMenuItem(new AbstractAction() {
+			{
+				putValue(NAME, "モノクロ");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				write(Constants.COMMAND_IMAGE_KIND, 0);
+			}
+
+		});
+		group.add(radio);
+		menu.add(radio);
+
+		radio = new JRadioButtonMenuItem(new AbstractAction() {
+			{
+				putValue(NAME, "グレースケール");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				write(Constants.COMMAND_IMAGE_KIND, 1);
+			}
+
+		});
+		group.add(radio);
+		menu.add(radio);
+
+		radio = new JRadioButtonMenuItem(new AbstractAction() {
+			{
+				putValue(NAME, "カラー");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				write(Constants.COMMAND_IMAGE_KIND, 2);
+			}
+
+		});
+		radio.setSelected(true);
+		group.add(radio);
+		menu.add(radio);
+		menuBar.add(menu);
+		menu = new JMenu("操作");
+		checkbox = new JCheckBoxMenuItem(new AbstractAction() {
+			{
+				putValue(NAME, "マウス");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (checkbox.isSelected()) {
+					write(Constants.COMMAND_MOUSE_FLAG, true);
+				} else {
+					write(Constants.COMMAND_MOUSE_FLAG, false);
+
+				}
+			}
+
+		});
+		menu.add(checkbox);
+
+		checkbox2 = new JCheckBoxMenuItem(new AbstractAction() {
+			{
+				putValue(NAME, "キーボード");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (checkbox.isSelected()) {
+					write(Constants.COMMAND_KEY_FLAG, true);
+				} else {
+					write(Constants.COMMAND_KEY_FLAG, false);
+				}
+			}
+
+		});
+		menu.add(checkbox2);
+		menuBar.add(menu);
+
+		menu = new JMenu("送信");
+		menu.add(new JMenuItem(new AbstractAction() {
+			{
+				putValue(NAME, "遅延");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String value = JOptionPane.showInputDialog(RemonClient.this, "遅延時間", "100");
+				if (value != null) {
+					write(Constants.COMMAND_DELAY, Integer.parseInt(value));
+				}
+			}
+
+		}));
 		menuBar.add(menu);
 		setJMenuBar(menuBar);
 
@@ -132,13 +240,27 @@ public class RemonClient extends JFrame {
 			e.printStackTrace();
 		}
 	}
-
+	public void write(int command, boolean... attributes) {
+		try {
+			if (!socket.isClosed() && !socket.isOutputShutdown()) {
+				os.write(command);
+				for (boolean attribute : attributes) {
+					bytes[0] = (byte) (attribute ? 0x01 : 0x00);
+					os.write(bytes);
+				}
+				os.flush();
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage());
+			e.printStackTrace();
+		}
+	}
 	public void connect(String hostName, int port) {
 
 		try {
-			if (ssl){
+			if (ssl) {
 				SSLContext sslContext = SSLContext.getDefault();
-		        SocketFactory sf = sslContext.getSocketFactory();
+				SocketFactory sf = sslContext.getSocketFactory();
 				socket = sf.createSocket(hostName, port);
 			} else {
 				socket = new Socket(hostName, port);
@@ -149,20 +271,14 @@ public class RemonClient extends JFrame {
 			panel.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					write(Constants.COMMAND_MOUSE_RELEASE,
-							e.getModifiers() &
-									(InputEvent.BUTTON1_MASK |
-											InputEvent.BUTTON2_MASK |
-									InputEvent.BUTTON3_MASK));
+					write(Constants.COMMAND_MOUSE_RELEASE, e.getModifiers()
+							& (InputEvent.BUTTON1_MASK | InputEvent.BUTTON2_MASK | InputEvent.BUTTON3_MASK));
 				}
 
 				@Override
 				public void mousePressed(MouseEvent e) {
-					write(Constants.COMMAND_MOUSE_PRESS, e.getClickCount(),
-							e.getModifiers() &
-									(InputEvent.BUTTON1_MASK |
-											InputEvent.BUTTON2_MASK |
-									InputEvent.BUTTON3_MASK));
+					write(Constants.COMMAND_MOUSE_PRESS, e.getClickCount(), e.getModifiers()
+							& (InputEvent.BUTTON1_MASK | InputEvent.BUTTON2_MASK | InputEvent.BUTTON3_MASK));
 				}
 			});
 			panel.addMouseMotionListener(new MouseMotionListener() {
@@ -188,14 +304,16 @@ public class RemonClient extends JFrame {
 				}
 			});
 
-			tabbedPane.addTab(hostName + "(" + port + ")", scrollPane);
-			ImageReceiver receiver = mono ? new MonoReceiver(socket, panel) : new ImageReceiver(socket, panel);
+			tabbedPane.addTab(hostName + ":" + port + "", scrollPane);
+			ImageReceiver receiver = mono ? new Receiver(socket, panel) : new ImageReceiver(socket, panel);
 
 			receiverMap.put(scrollPane, receiver);
 			Thread thread = new Thread(receiver);
 			thread.setDaemon(true);
 			thread.start();
 			os = socket.getOutputStream();
+
+			write(Constants.COMMAND_IMAGE_KIND, 2);
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(this, e2.getMessage());
 			e2.printStackTrace();
