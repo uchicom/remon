@@ -14,16 +14,16 @@ public class PngAnalysis implements Analysis {
 	private ImagePanel panel;
 
 	@Override
-	public void refrectImage(int x, int y, int option, byte[] imageBytes) {
+	public void refrectImage(int x, int y, int option, byte[] imageBytes, int length) {
 
 		BufferedImage image;
 		try {
-			image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+			image = ImageIO.read(new ByteArrayInputStream(imageBytes, 0, length));
 			if (image == null) {
 				return;
 			}
 
-			panel.setImage(image, 0, 0, 0);
+			panel.setImage(image, 0, 0, length);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

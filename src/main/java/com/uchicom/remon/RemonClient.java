@@ -22,8 +22,9 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.SocketFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -260,8 +261,9 @@ public class RemonClient extends JFrame {
 		try {
 			if (ssl) {
 				SSLContext sslContext = SSLContext.getDefault();
-				SocketFactory sf = sslContext.getSocketFactory();
+				SSLSocketFactory sf = sslContext.getSocketFactory();
 				socket = sf.createSocket(hostName, port);
+				((SSLSocket)socket).startHandshake();
 			} else {
 				socket = new Socket(hostName, port);
 			}

@@ -10,13 +10,12 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import com.uchicom.remon.runnable.CommandReceiver;
 import com.uchicom.remon.runnable.ImageSender;
 import com.uchicom.remon.runnable.Sender;
-import com.uchicom.remon.type.AnalysisStrategy;
 
 /**
  * リモートサーバ.<br/>
@@ -51,7 +50,7 @@ public class RemonServer {
 		try {
 			if (ssl) {
 				SSLContext sslContext = SSLContext.getDefault();
-				ServerSocketFactory ssf = sslContext.getServerSocketFactory();
+				SSLServerSocketFactory ssf = sslContext.getServerSocketFactory();
 				server = ssf.createServerSocket();
 			} else {
 				server = new ServerSocket();

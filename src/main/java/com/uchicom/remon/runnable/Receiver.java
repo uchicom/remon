@@ -72,7 +72,7 @@ public class Receiver extends ImageReceiver {
 				}
 				imageBytes = setByteAuto(is, imageBytes, length);
 				analysis.setImagePanel(panel);
-				analysis.refrectImage(x, y, option, imageBytes);
+				analysis.refrectImage(x, y, option, imageBytes, length);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

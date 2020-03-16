@@ -55,8 +55,8 @@ public class ImagePanel extends JPanel {
 					setPreferredSize(new Dimension(image.getWidth(), image.getHeight()));
 				} else {
 					ImagePanel.this.image.getGraphics().drawImage(image, x, y, ImagePanel.this);
-					ImagePanel.this.transfer += transfer;
 				}
+				ImagePanel.this.transfer += transfer;
 				repaint();
 			}
 		});

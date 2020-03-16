@@ -5,7 +5,7 @@ import com.uchicom.remon.util.ImagePanel;
 
 public interface Analysis {
 
-	public void refrectImage(int x, int y, int option, byte[] imageBytes);
+	public void refrectImage(int x, int y, int option, byte[] imageBytes, int length);
 	
 	public void setImagePanel(ImagePanel panel);
 }
