@@ -65,7 +65,7 @@ public class RemonServer {
 				Thread receiverT = new Thread(receiver);
 				receiverT.setDaemon(true);
 				receiverT.start();
-				Thread sender = new Thread(mono ? new Sender(socket, receiver) : new ImageSender(socket));
+				Thread sender = new Thread(mono ? new Sender(socket, receiver) : new ImageSender(socket, receiver));
 				sender.setDaemon(true);
 				sender.start();
 

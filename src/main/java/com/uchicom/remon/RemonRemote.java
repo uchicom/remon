@@ -31,9 +31,11 @@ public class RemonRemote {
 	public void execute() {
 		try {
 			Socket socket = new Socket(hostName, port);
+			CommandReceiver commandReceiver = new CommandReceiver(socket);
 			Thread receiver = new Thread(new CommandReceiver(socket));
 			receiver.start();
-			Thread sender = new Thread(mono ? new MonoSender(socket) : new ImageSender(socket));
+			Thread sender = new Thread(
+					mono ? new MonoSender(socket, commandReceiver) : new ImageSender(socket, commandReceiver));
 			sender.start();
 		} catch (Exception e2) {
 			e2.printStackTrace();

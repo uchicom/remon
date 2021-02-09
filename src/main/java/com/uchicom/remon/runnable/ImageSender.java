@@ -5,13 +5,15 @@ package com.uchicom.remon.runnable;
 
 import java.awt.AWTException;
 import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.zip.GZIPOutputStream;
 
 import com.uchicom.remon.Constants;
-import com.uchicom.remon.RemonRobot;
 
 /**
  * 画像送信処理.
@@ -23,11 +25,14 @@ public class ImageSender implements Runnable {
 
 	private Socket socket;
 
+	private CommandReceiver strategy;
+
 	/**
 	 *
 	 */
-	public ImageSender(Socket socket) {
+	public ImageSender(Socket socket, CommandReceiver strategy) {
 		this.socket = socket;
+		this.strategy = strategy;
 	}
 
 	/*
@@ -40,7 +45,7 @@ public class ImageSender implements Runnable {
 		Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 
 		try (GZIPOutputStream gos = new GZIPOutputStream(socket.getOutputStream(), true)) {
-			RemonRobot robot = new RemonRobot();
+			Robot robot = new Robot();
 			int size = screenRect.width * screenRect.height;
 			int[][] image = new int[2][size];
 			int[] previousImage = null;
@@ -57,17 +62,19 @@ public class ImageSender implements Runnable {
 					printLog("start", base);
 				if (Constants.DEBUG)
 					System.out.println("送信" + cnt++);
-				//				BufferedImage bi = robot.createScreenCapture(screenRect);//90msec
-				//				BufferedImage  bi = gc[0].createCompatibleImage(screenRect.width, screenRect.height);
+				BufferedImage bi = robot.createScreenCapture(screenRect);// 90msec
+				// BufferedImage bi = gc[0].createCompatibleImage(screenRect.width,
+				// screenRect.height);
 
-				//				now = System.currentTimeMillis();
-				//				System.out.println("d" + (now - base));
-				//				bi.getRGB(0, 0, screenRect.width, screenRect.height, image[index], 0, screenRect.width);//190msec
+				// now = System.currentTimeMillis();
+				// System.out.println("d" + (now - base));
+				// bi.getRGB(0, 0, screenRect.width, screenRect.height, image[index], 0,
+				// screenRect.width);//190msec
 
-				//				DataBufferInt buffer = (DataBufferInt) bi.getData().getDataBuffer();//22msec
-				//				image[index] = buffer.getData();
-				//				image[index] = robot.getPixels(screenRect);//92msec
-				robot.getPixels(screenRect, image[index]);//60msec
+				DataBufferInt buffer = (DataBufferInt) bi.getData().getDataBuffer();// 22msec
+				image[index] = buffer.getData();
+				// image[index] = robot.getPixels(screenRect);//92msec
+//				robot.getPixels(screenRect, image[index]);//60msec
 				if (Constants.DEBUG)
 					printLog("getPixels", base);
 				//ここでイメージを2回チェックしてるから遅いんだな。
@@ -89,6 +96,11 @@ public class ImageSender implements Runnable {
 				}
 
 				gos.flush();
+				//遅延
+				int delay = strategy.getDelay();
+				if (delay > 0) {
+					Thread.sleep(delay);
+				}
 				if (Constants.DEBUG)
 					printLog("flush", base);
 				previousImage = image[index];

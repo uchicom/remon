@@ -69,7 +69,8 @@ public class RemonClient extends JFrame {
 	private boolean ssl;
 	private boolean mono;
 	private GraphicsConfiguration gc;
-
+	private int delay = 100;
+	
 	public RemonClient(GraphicsConfiguration gc) {
 		super(gc);
 	}
@@ -185,9 +186,10 @@ public class RemonClient extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String value = JOptionPane.showInputDialog(RemonClient.this, "遅延時間", "100");
+				String value = JOptionPane.showInputDialog(RemonClient.this, "遅延時間", delay);
 				if (value != null) {
-					write(Constants.COMMAND_DELAY, Integer.parseInt(value));
+					RemonClient.this.delay = Integer.parseInt(value);
+					write(Constants.COMMAND_DELAY, RemonClient.this.delay);
 				}
 			}
 

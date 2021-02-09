@@ -28,11 +28,14 @@ public class MonoSender implements Runnable {
 
 	private Socket socket;
 
+	private CommandReceiver strategy;
+
 	/**
 	 *
 	 */
-	public MonoSender(Socket socket) {
+	public MonoSender(Socket socket, CommandReceiver strategy) {
 		this.socket = socket;
+		this.strategy = strategy;
 	}
 
 	/*
@@ -46,7 +49,7 @@ public class MonoSender implements Runnable {
 		byte[] previous = null;
 		try (OutputStream gos = (socket.getOutputStream())) {
 			Robot robot = new Robot();
-			
+
 			int cnt = 0;
 
 			while (!socket.isOutputShutdown()) {
@@ -63,16 +66,17 @@ public class MonoSender implements Runnable {
 				}
 				previous = now;
 				int length = now.length;
-				byte[] lengthBytes = new byte[] {
-						(byte)(length & 0xFF),
-						(byte)(length >> 8 & 0xFF),
-						(byte)(length >> 16 & 0xFF),
-						(byte)(length >> 24 & 0xFF)
-				};
+				byte[] lengthBytes = new byte[] { (byte) (length & 0xFF), (byte) (length >> 8 & 0xFF),
+						(byte) (length >> 16 & 0xFF), (byte) (length >> 24 & 0xFF) };
 				gos.write(lengthBytes);
 				gos.write(now);
 				gos.flush();
+				//遅延
+				int delay = strategy.getDelay();
+				if (delay > 0) {
+					Thread.sleep(delay);
 				}
+			}
 		} catch (IOException e1) {
 			// TODO 自動生成された catch ブロック
 			e1.printStackTrace();
