@@ -42,6 +42,7 @@ public class Receiver extends ImageReceiver {
 		this.socket = socket;
 		this.panel = panel;
 		this.aes = aes;
+		this.encryptionService = new EncryptionService(aes);
 	}
 
 	/*
@@ -75,7 +76,7 @@ public class Receiver extends ImageReceiver {
 				}
 				imageBytes = setByteAuto(is, imageBytes, length);
 				if (aes != null) {
-					imageBytes = encryptionService.decrypt(imageBytes);
+					imageBytes = encryptionService.decrypt(imageBytes, 0, length);
 				}
 				analysis.setImagePanel(panel);
 				analysis.refrectImage(x, y, option, imageBytes, length);

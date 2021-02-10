@@ -25,11 +25,11 @@ public class EncryptionService {
 		return encrypter.doFinal(target);
 	}
 
-	public byte[] decrypt(byte[] encryptedBytes) throws Exception {
+	public byte[] decrypt(byte[] encryptedBytes, int offset, int length) throws Exception {
 
 		Cipher decrypter = Cipher.getInstance(ALGORITHM);
 		decrypter.init(Cipher.DECRYPT_MODE, this.key, this.iv);
 
-		return decrypter.doFinal(encryptedBytes);
+		return decrypter.doFinal(encryptedBytes, offset, length);
 	}
 }
