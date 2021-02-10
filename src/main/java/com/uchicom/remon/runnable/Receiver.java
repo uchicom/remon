@@ -78,7 +78,7 @@ public class Receiver extends ImageReceiver {
 				}
 				imageBytes = setByteAuto(is, imageBytes, length);
 				if (aes != null) {
-					imageBytes = encryptionService.encrypt(imageBytes);
+					imageBytes = encryptionService.decrypt(imageBytes);
 				}
 				analysis.setImagePanel(panel);
 				analysis.refrectImage(x, y, option, imageBytes, length);
