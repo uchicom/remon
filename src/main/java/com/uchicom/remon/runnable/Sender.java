@@ -18,6 +18,7 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import com.uchicom.remon.Constants;
+import com.uchicom.remon.service.EncryptionService;
 
 /**
  * 画像送信処理.
@@ -31,15 +32,19 @@ public class Sender implements Runnable {
 
 	private CommandReceiver strategy;
 
+	private String aes;
 	BufferedImage mono;
 	BufferedImage gray;
+	private EncryptionService encryptionService;
 
 	/**
 	 *
 	 */
-	public Sender(Socket socket, CommandReceiver strategy) {
+	public Sender(Socket socket, CommandReceiver strategy, String aes) {
 		this.socket = socket;
 		this.strategy = strategy;
+		this.aes = aes;
+		this.encryptionService = new EncryptionService(aes);
 	}
 
 	/*
@@ -94,6 +99,9 @@ public class Sender implements Runnable {
 					break;
 				}
 				byte[] now = boas.toByteArray();
+				if (aes != null) {
+					now = encryptionService.encrypt(now);
+				}
 
 				// 送信判定（差分、全部）
 				if (Arrays.equals(previous, now)) {

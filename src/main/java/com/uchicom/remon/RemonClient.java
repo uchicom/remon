@@ -72,15 +72,17 @@ public class RemonClient extends JFrame {
 	private boolean mono;
 	private GraphicsConfiguration gc;
 	private int delay = 100;
+	private String aes;
 	
 	public RemonClient(GraphicsConfiguration gc) {
 		super(gc);
 	}
 
-	public RemonClient(boolean ssl, boolean mono) {
+	public RemonClient(boolean ssl, boolean mono, String aes) {
 		super("Remon");
 		this.ssl = ssl;
 		this.mono = mono;
+		this.aes = aes;
 		initComponents();
 	}
 
@@ -316,7 +318,7 @@ public class RemonClient extends JFrame {
 			});
 
 			tabbedPane.addTab(hostName + ":" + port + "", scrollPane);
-			ImageReceiver receiver = mono ? new Receiver(socket, panel) : new ImageReceiver(socket, panel);
+			ImageReceiver receiver = mono ? new Receiver(socket, panel, aes) : new ImageReceiver(socket, panel);
 
 			receiverMap.put(scrollPane, receiver);
 			Thread thread = new Thread(receiver);

@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import com.uchicom.remon.service.EncryptionService;
 import com.uchicom.remon.strategy.Analysis;
 import com.uchicom.remon.type.AnalysisStrategy;
 import com.uchicom.remon.util.ImagePanel;
@@ -26,6 +27,10 @@ public class Receiver extends ImageReceiver {
 	/** パネル */
 	private ImagePanel panel;
 
+	private String aes;
+
+	private EncryptionService encryptionService;
+
 	private boolean stoped;
 	
 	private BufferedImage image;
@@ -35,10 +40,11 @@ public class Receiver extends ImageReceiver {
 	 * @param socket
 	 * @param client
 	 */
-	public Receiver(Socket socket, ImagePanel panel) {
+	public Receiver(Socket socket, ImagePanel panel, String aes) {
 		super(socket, panel);
 		this.socket = socket;
 		this.panel = panel;
+		this.aes = aes;
 	}
 
 	/*
@@ -71,10 +77,15 @@ public class Receiver extends ImageReceiver {
 					analysis = AnalysisStrategy.getAnalysis(strategy);
 				}
 				imageBytes = setByteAuto(is, imageBytes, length);
+				if (aes != null) {
+					imageBytes = encryptionService.encrypt(imageBytes);
+				}
 				analysis.setImagePanel(panel);
 				analysis.refrectImage(x, y, option, imageBytes, length);
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

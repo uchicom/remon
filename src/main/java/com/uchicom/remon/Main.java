@@ -25,6 +25,7 @@ public class Main {
 		boolean udp = false;
 		boolean multicast = false;
 		boolean mono = false;
+		String aes = null;
 		String host = null;
 		int port = 10000;
 		int sendPort = 10000;
@@ -80,12 +81,18 @@ public class Main {
 			case "-mono":
 				mono = true;
 				break;
-
+			case "-aes":
+				if (++i < args.length) {
+					aes = args[i];
+				} else {
+					System.out.println("aes error");
+				}
+				break;
 			}
 		}
 		final boolean ssl2 = ssl;
 		if (server) {
-			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast, mono);
+			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast, mono, aes);
 			remonServer.execute();
 		} else if (remote) {
 			RemonRemote remonRemote = new RemonRemote(host, port, mono);
@@ -95,8 +102,9 @@ public class Main {
 			remonThrough.execute();
 		} else {
 			final boolean mono2 = mono;
+			final String aes2 = aes;
 			SwingUtilities.invokeLater(() -> {
-				RemonClient client = new RemonClient(ssl2, mono2);
+				RemonClient client = new RemonClient(ssl2, mono2, aes2);
 				client.setPreferredSize(new Dimension(320, 320));
 				client.pack();
 				client.setVisible(true);
