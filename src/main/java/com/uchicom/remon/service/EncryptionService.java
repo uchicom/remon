@@ -8,7 +8,7 @@ public class EncryptionService {
 
 	private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
-	private static final String INIT_VECTOR = "testvector";
+	private static final String INIT_VECTOR = "testvector123456";
 
 	private final IvParameterSpec iv;
 	private final SecretKeySpec key;
