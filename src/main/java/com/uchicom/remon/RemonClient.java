@@ -286,8 +286,7 @@ public class RemonClient extends JFrame {
 			if (!socket.isClosed() && !socket.isOutputShutdown()) {
 				os.write(command);
 				for (boolean attribute : attributes) {
-					bytes[0] = (byte) (attribute ? 0x01 : 0x00);
-					os.write(bytes, 0, 1);
+					os.write((byte) (attribute ? 0x01 : 0x00));
 				}
 				os.flush();
 			}
