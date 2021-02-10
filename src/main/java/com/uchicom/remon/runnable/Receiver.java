@@ -13,7 +13,7 @@ import com.uchicom.remon.type.AnalysisStrategy;
 import com.uchicom.remon.util.ImagePanel;
 
 /**
- * 画像受信処理.
+ * PNG画像受信処理.
  *
  * @author uchicom: Shigeki Uchiyama
  *

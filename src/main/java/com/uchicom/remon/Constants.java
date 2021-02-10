@@ -27,13 +27,9 @@ public class Constants {
 	public static final int COMMAND_MOUSE_PRESS= 3;
 	public static final int COMMAND_MOUSE_RELEASE = 4;
 	public static final int COMMAND_MOUSE_WHEEL = 5;
-	// 画像の種類
-	/** モノクロ画像 */
+
+	/** 画像種別 */
 	public static final int COMMAND_IMAGE_KIND = 6;
-	/** グレースケール画像 */
-//	public static final int COMMAND_IMAGE_GRAYSCALE = 7;
-//	/** カラー画像 */
-//	public static final int COMMAND_IMAGE_COLOR = 8;
 	
 	// 送信種別
 	/** 差分送信 */

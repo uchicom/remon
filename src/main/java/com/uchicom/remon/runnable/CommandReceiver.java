@@ -139,4 +139,10 @@ public class CommandReceiver implements Runnable {
 	public int getDelay() {
 		return delay;
 	}
+	public int getSendKind() {
+		return sendKind;
+	}
+	public int getExtractKind() {
+		return extractKind;
+	}
 }

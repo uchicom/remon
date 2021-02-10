@@ -31,6 +31,9 @@ public class Sender implements Runnable {
 
 	private CommandReceiver strategy;
 
+	BufferedImage mono;
+	BufferedImage gray;
+
 	/**
 	 *
 	 */
@@ -68,25 +71,26 @@ public class Sender implements Runnable {
 
 				switch (strategy.getImageKind()) {
 				case 0:// mono
-					BufferedImage mono = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+					if (mono == null) {
+						mono = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+					}
 					mono.getGraphics().drawImage(bi, 0, 0, null);
 					mono.getData().getPixels(0, 0, mono.getWidth(), mono.getHeight(), buff);
 
-					ImageIO.write(mono, "PNG", boas);
-					System.out.println("mono" + mono.getType());
+					ImageIO.write(mono, "PNG", boas);//100sec
 
 					break;
 				case 1:// gray
-					BufferedImage gray = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+					if (gray == null) {
+						gray = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+					}
 					gray.getGraphics().drawImage(bi, 0, 0, null);
 					gray.getData().getPixels(0, 0, gray.getWidth(), gray.getHeight(), buff);
 
-					ImageIO.write(gray, "PNG", boas);
-					System.out.println("gray" + gray.getType());
+					ImageIO.write(gray, "PNG", boas);//100sec
 					break;
 				case 2:// color
-					ImageIO.write(bi, "PNG", boas);
-					System.out.println("color" + bi.getType());
+					ImageIO.write(bi, "PNG", boas);//200msec
 					break;
 				}
 				byte[] now = boas.toByteArray();

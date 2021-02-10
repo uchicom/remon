@@ -16,6 +16,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -219,6 +221,11 @@ public class RemonClient extends JFrame {
 			}
 		});
 
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				close();
+			}
+		});
 	}
 
 	Socket socket = null;
@@ -326,6 +333,9 @@ public class RemonClient extends JFrame {
 
 	public void close() {
 		Component component = tabbedPane.getSelectedComponent();
+		if (component == null) {
+			return;
+		}
 		ImageReceiver receiver = receiverMap.get(component);
 		tabbedPane.remove(component);
 		receiverMap.remove(component);
