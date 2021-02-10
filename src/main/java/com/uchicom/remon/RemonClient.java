@@ -310,15 +310,18 @@ public class RemonClient extends JFrame {
 			JScrollPane scrollPane = new JScrollPane(panel);
 
 			panel.addMouseListener(new MouseAdapter() {
+				private int modifiersEx;
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					write(Constants.COMMAND_MOUSE_RELEASE, e.getModifiersEx()
+					write(Constants.COMMAND_MOUSE_RELEASE, modifiersEx & (~e.getModifiersEx())
 							& (InputEvent.BUTTON1_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK));
+					modifiersEx = e.getModifiersEx();
 				}
 
 				@Override
 				public void mousePressed(MouseEvent e) {
-					write(Constants.COMMAND_MOUSE_PRESS, e.getClickCount(), e.getModifiersEx()
+					modifiersEx = e.getModifiersEx();
+					write(Constants.COMMAND_MOUSE_PRESS, e.getClickCount(), modifiersEx
 							& (InputEvent.BUTTON1_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK));
 				}
 			});
