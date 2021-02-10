@@ -99,9 +99,6 @@ public class Sender implements Runnable {
 					break;
 				}
 				byte[] now = boas.toByteArray();
-				if (aes != null) {
-					now = encryptionService.encrypt(now);
-				}
 
 				// 送信判定（差分、全部）
 				if (Arrays.equals(previous, now)) {
@@ -109,7 +106,13 @@ public class Sender implements Runnable {
 				}
 				// 画像送信
 				previous = now;
-				int length = now.length;
+				byte[] send = null;
+				if (aes != null) {
+					send = encryptionService.encrypt(now);
+				} else {
+					send = now;
+				}
+				int length = send.length;
 				intToBytes(infoBytes, 0, 4, length); // length
 				intToBytes(infoBytes, 4, 2, 0); // x
 				intToBytes(infoBytes, 6, 2, 0); // y
@@ -118,7 +121,7 @@ public class Sender implements Runnable {
 				intToBytes(infoBytes, 10, 2, 0); // option
 
 				os.write(infoBytes);
-				os.write(now);
+				os.write(send);
 				os.flush();
 				//遅延
 				int delay = strategy.getDelay();
