@@ -3,7 +3,6 @@
  */
 package com.uchicom.remon.runnable;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -31,9 +30,7 @@ public class Receiver extends ImageReceiver {
 
 	private EncryptionService encryptionService;
 
-	private boolean stoped;
-	
-	private BufferedImage image;
+	private boolean stoped;	
 
 	/**
 	 *

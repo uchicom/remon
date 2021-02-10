@@ -45,28 +45,28 @@ public class Main {
 				if (++i < args.length) {
 					host = args[i];
 				} else {
-					System.out.println("host error");
+					System.err.println("host error");
 				}
 				break;
 			case "-port":
 				if (++i < args.length) {
 					port = Integer.parseInt(args[i]);
 				} else {
-					System.out.println("port error");
+					System.err.println("port error");
 				}
 				break;
 			case "-sendPort":
 				if (++i < args.length) {
 					sendPort = Integer.parseInt(args[i]);
 				} else {
-					System.out.println("port error");
+					System.err.println("port error");
 				}
 				break;
 			case "-receivePort":
 				if (++i < args.length) {
 					receivePort = Integer.parseInt(args[i]);
 				} else {
-					System.out.println("port error");
+					System.err.println("port error");
 				}
 				break;
 			case "-ssl":
@@ -85,7 +85,7 @@ public class Main {
 				if (++i < args.length) {
 					aes = args[i];
 				} else {
-					System.out.println("aes error");
+					System.err.println("aes error");
 				}
 				break;
 			}
@@ -95,7 +95,7 @@ public class Main {
 			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast, mono, aes);
 			remonServer.execute();
 		} else if (remote) {
-			RemonRemote remonRemote = new RemonRemote(host, port, mono);
+			RemonRemote remonRemote = new RemonRemote(host, port, mono, aes);
 			remonRemote.execute();
 		} else if (through) {
 			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort);

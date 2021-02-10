@@ -70,7 +70,6 @@ public class RemonClient extends JFrame {
 	private Map<JScrollPane, ImageReceiver> receiverMap = new HashMap<>();
 	private boolean ssl;
 	private boolean mono;
-	private GraphicsConfiguration gc;
 	private int delay = 100;
 	private String aes;
 	
@@ -103,6 +102,11 @@ public class RemonClient extends JFrame {
 		menu = new JMenu("画像");
 		ButtonGroup group = new ButtonGroup();
 		JRadioButtonMenuItem radio = new JRadioButtonMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			{
 				putValue(NAME, "モノクロ");
 			}
@@ -117,6 +121,11 @@ public class RemonClient extends JFrame {
 		menu.add(radio);
 
 		radio = new JRadioButtonMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+	
 			{
 				putValue(NAME, "グレースケール");
 			}
@@ -131,6 +140,11 @@ public class RemonClient extends JFrame {
 		menu.add(radio);
 
 		radio = new JRadioButtonMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+	
 			{
 				putValue(NAME, "カラー");
 			}
@@ -147,6 +161,11 @@ public class RemonClient extends JFrame {
 		menuBar.add(menu);
 		menu = new JMenu("操作");
 		checkbox = new JCheckBoxMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+	
 			{
 				putValue(NAME, "マウス");
 			}
@@ -165,6 +184,11 @@ public class RemonClient extends JFrame {
 		menu.add(checkbox);
 
 		checkbox2 = new JCheckBoxMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+	
 			{
 				putValue(NAME, "キーボード");
 			}
@@ -184,6 +208,11 @@ public class RemonClient extends JFrame {
 
 		menu = new JMenu("送信");
 		menu.add(new JMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+	
 			{
 				putValue(NAME, "遅延");
 			}
@@ -258,7 +287,7 @@ public class RemonClient extends JFrame {
 				os.write(command);
 				for (boolean attribute : attributes) {
 					bytes[0] = (byte) (attribute ? 0x01 : 0x00);
-					os.write(bytes);
+					os.write(bytes, 0, 1);
 				}
 				os.flush();
 			}
@@ -284,14 +313,14 @@ public class RemonClient extends JFrame {
 			panel.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseReleased(MouseEvent e) {
-					write(Constants.COMMAND_MOUSE_RELEASE, e.getModifiers()
-							& (InputEvent.BUTTON1_MASK | InputEvent.BUTTON2_MASK | InputEvent.BUTTON3_MASK));
+					write(Constants.COMMAND_MOUSE_RELEASE, e.getModifiersEx()
+							& (InputEvent.BUTTON1_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK));
 				}
 
 				@Override
 				public void mousePressed(MouseEvent e) {
-					write(Constants.COMMAND_MOUSE_PRESS, e.getClickCount(), e.getModifiers()
-							& (InputEvent.BUTTON1_MASK | InputEvent.BUTTON2_MASK | InputEvent.BUTTON3_MASK));
+					write(Constants.COMMAND_MOUSE_PRESS, e.getClickCount(), e.getModifiersEx()
+							& (InputEvent.BUTTON1_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON3_DOWN_MASK));
 				}
 			});
 			panel.addMouseMotionListener(new MouseMotionListener() {
