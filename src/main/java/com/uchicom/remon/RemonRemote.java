@@ -34,7 +34,7 @@ public class RemonRemote {
 		try {
 			Socket socket = new Socket(hostName, port);
 			CommandReceiver commandReceiver = new CommandReceiver(socket);
-			Thread receiver = new Thread(new CommandReceiver(socket));
+			Thread receiver = new Thread(commandReceiver);
 			receiver.start();
 			Thread sender = new Thread(
 					mono ? new Sender(socket, commandReceiver, aes) : new ImageSender(socket, commandReceiver));
