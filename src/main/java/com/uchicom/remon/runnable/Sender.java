@@ -68,7 +68,6 @@ public class Sender implements Runnable {
 				if (Constants.DEBUG)
 					System.out.println("送信" + cnt++);
 				if (strategy.getImageKind() == null) {
-					System.out.println("null");
 					Thread.sleep(250);
 					continue;
 				}

@@ -359,11 +359,20 @@ public class RemonClient extends JFrame {
 			thread.start();
 			os = socket.getOutputStream();
 
-			write(Constants.COMMAND_IMAGE_KIND, 2);
+			// 初期値送信
+			initParameters();
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(this, e2.getMessage());
 			e2.printStackTrace();
 		}
+	}
+
+	/**
+	 * 初期パラメータ設定.
+	 */
+	private void initParameters() {
+		write(Constants.COMMAND_DELAY, 100);
+		write(Constants.COMMAND_IMAGE_KIND, 2); // 送信開始
 	}
 
 	public void close() {
