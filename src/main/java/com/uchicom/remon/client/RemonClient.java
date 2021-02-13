@@ -202,6 +202,22 @@ public class RemonClient extends JFrame {
 
 		});
 		menu.add(checkbox2);
+		menu.add(new JMenuItem(new AbstractAction() {
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+	
+			{
+				putValue(NAME, "アンダースコアをクリップボードにコピー");
+			}
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				write(Constants.COMMAND_KEY_PRESS, KeyEvent.VK_UNDERSCORE);
+			}
+
+		}));
 		menuBar.add(menu);
 
 		menu = new JMenu("送信");
@@ -246,6 +262,7 @@ public class RemonClient extends JFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
+				System.out.println("k:" + e.getKeyCode());
 				write(Constants.COMMAND_KEY_PRESS, e.getKeyCode());
 			}
 		});
