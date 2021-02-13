@@ -1,14 +1,14 @@
 /**
  * (c) 2016 uchicom
  */
-package com.uchicom.remon.action;
+package com.uchicom.remon.client.action;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 import javax.swing.JOptionPane;
 
-import com.uchicom.remon.RemonClient;
+import com.uchicom.remon.client.RemonClient;
 
 /**
  * 接続アクション.

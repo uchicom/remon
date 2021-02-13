@@ -7,6 +7,11 @@ import java.awt.Dimension;
 
 import javax.swing.SwingUtilities;
 
+import com.uchicom.remon.client.RemonClient;
+import com.uchicom.remon.server.RemonRemote;
+import com.uchicom.remon.server.RemonServer;
+import com.uchicom.remon.server.RemonThrough;
+
 /**
  * メイン処理.
  *

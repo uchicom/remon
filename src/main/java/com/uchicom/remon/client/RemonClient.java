@@ -1,7 +1,7 @@
 /**
  * (c) 2016 uchicom
  */
-package com.uchicom.remon;
+package com.uchicom.remon.client;
 
 import java.awt.Component;
 import java.awt.GraphicsConfiguration;
@@ -36,8 +36,9 @@ import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import com.uchicom.remon.action.CloseAction;
-import com.uchicom.remon.action.ConnectAction;
+import com.uchicom.remon.Constants;
+import com.uchicom.remon.client.action.CloseAction;
+import com.uchicom.remon.client.action.ConnectAction;
 import com.uchicom.remon.runnable.ImageReceiver;
 import com.uchicom.remon.runnable.Receiver;
 import com.uchicom.remon.util.ImagePanel;

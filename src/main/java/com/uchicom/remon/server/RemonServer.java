@@ -1,7 +1,7 @@
 /**
  * (c) 2016 uchicom
  */
-package com.uchicom.remon;
+package com.uchicom.remon.server;
 
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;

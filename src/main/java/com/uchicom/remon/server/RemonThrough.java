@@ -1,13 +1,14 @@
 /**
  * (c) 2016 uchicom
  */
-package com.uchicom.remon;
+package com.uchicom.remon.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import com.uchicom.remon.Constants;
 import com.uchicom.remon.runnable.Througher;
 
 /**
