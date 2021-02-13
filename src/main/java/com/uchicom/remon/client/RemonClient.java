@@ -262,7 +262,6 @@ public class RemonClient extends JFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				System.out.println("k:" + e.getKeyCode());
 				write(Constants.COMMAND_KEY_PRESS, e.getKeyCode());
 			}
 		});
