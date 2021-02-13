@@ -33,11 +33,12 @@ public class RemonServer {
 //	private boolean multicast;
 	private boolean mono;
 	private String aes;
+	private String iv;
 
 	/**
 	 *
 	 */
-	public RemonServer(String hostName, int port, boolean ssl, boolean udp, boolean multicast, boolean mono, String aes) {
+	public RemonServer(String hostName, int port, boolean ssl, boolean udp, boolean multicast, boolean mono, String aes, String iv) {
 		this.hostName = hostName;
 		this.port = port;
 		this.ssl = ssl;
@@ -45,6 +46,7 @@ public class RemonServer {
 //		this.multicast = multicast;
 		this.mono = mono;
 		this.aes = aes;
+		this.iv = iv;
 	}
 
 	public void execute() {
@@ -67,7 +69,7 @@ public class RemonServer {
 				Thread receiverT = new Thread(receiver);
 				receiverT.setDaemon(true);
 				receiverT.start();
-				Thread sender = new Thread(mono ? new Sender(socket, receiver, aes) : new ImageSender(socket, receiver));
+				Thread sender = new Thread(mono ? new Sender(socket, receiver, aes, iv) : new ImageSender(socket, receiver));
 				sender.setDaemon(true);
 				sender.start();
 

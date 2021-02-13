@@ -40,11 +40,11 @@ public class Sender implements Runnable {
 	/**
 	 *
 	 */
-	public Sender(Socket socket, CommandReceiver strategy, String aes) {
+	public Sender(Socket socket, CommandReceiver strategy, String aes, String iv) {
 		this.socket = socket;
 		this.strategy = strategy;
 		this.aes = aes;
-		this.encryptionService = new EncryptionService(aes);
+		this.encryptionService = new EncryptionService(aes, iv);
 	}
 
 	/*
@@ -67,7 +67,11 @@ public class Sender implements Runnable {
 			while (!socket.isOutputShutdown()) {
 				if (Constants.DEBUG)
 					System.out.println("送信" + cnt++);
-
+				if (strategy.getImageKind() == null) {
+					System.out.println("null");
+					Thread.sleep(250);
+					continue;
+				}
 				// キャプチャ
 				BufferedImage bi = robot.createScreenCapture(screenRect);// 90msec
 

@@ -25,7 +25,7 @@ public class CommandReceiver implements Runnable {
 
 	private boolean mouse;
 
-	private int imageKind;
+	private Integer imageKind;
 	private int sendKind;
 	private int extractKind;
 	private int delay;
@@ -133,7 +133,7 @@ public class CommandReceiver implements Runnable {
 		return value != 0;
 	}
 
-	public int getImageKind() {
+	public Integer getImageKind() {
 		return imageKind;
 	}
 	public int getDelay() {

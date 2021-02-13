@@ -37,12 +37,12 @@ public class Receiver extends ImageReceiver {
 	 * @param socket
 	 * @param client
 	 */
-	public Receiver(Socket socket, ImagePanel panel, String aes) {
+	public Receiver(Socket socket, ImagePanel panel, String aes, String iv) {
 		super(socket, panel);
 		this.socket = socket;
 		this.panel = panel;
 		this.aes = aes;
-		this.encryptionService = new EncryptionService(aes);
+		this.encryptionService = new EncryptionService(aes, iv);
 	}
 
 	/*

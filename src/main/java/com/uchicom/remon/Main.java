@@ -26,6 +26,7 @@ public class Main {
 		boolean multicast = false;
 		boolean mono = false;
 		String aes = null;
+		String iv = null;
 		String host = null;
 		int port = 10000;
 		int sendPort = 10000;
@@ -84,6 +85,19 @@ public class Main {
 			case "-aes":
 				if (++i < args.length) {
 					aes = args[i];
+					if (aes.length() != 16) {
+						throw new RuntimeException("aes length is not 16.");
+					}
+				} else {
+					System.err.println("aes error");
+				}
+				break;
+			case "-iv":
+				if (++i < args.length) {
+					iv = args[i];
+					if (iv.length() != 16) {
+						throw new RuntimeException("iv length is not 16.");
+					}
 				} else {
 					System.err.println("aes error");
 				}
@@ -92,10 +106,10 @@ public class Main {
 		}
 		final boolean ssl2 = ssl;
 		if (server) {
-			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast, mono, aes);
+			RemonServer remonServer = new RemonServer(host, port, ssl, udp, multicast, mono, aes, iv);
 			remonServer.execute();
 		} else if (remote) {
-			RemonRemote remonRemote = new RemonRemote(host, port, mono, aes);
+			RemonRemote remonRemote = new RemonRemote(host, port, mono, aes, iv);
 			remonRemote.execute();
 		} else if (through) {
 			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort);
@@ -103,8 +117,9 @@ public class Main {
 		} else {
 			final boolean mono2 = mono;
 			final String aes2 = aes;
+			final String iv2 = iv;
 			SwingUtilities.invokeLater(() -> {
-				RemonClient client = new RemonClient(ssl2, mono2, aes2);
+				RemonClient client = new RemonClient(ssl2, mono2, aes2, iv2);
 				client.setPreferredSize(new Dimension(320, 320));
 				client.pack();
 				client.setVisible(true);

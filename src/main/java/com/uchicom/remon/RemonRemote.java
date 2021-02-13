@@ -22,12 +22,14 @@ public class RemonRemote {
 	private int port;
 	private boolean mono;
 	private String aes;
+	private String iv;
 
-	public RemonRemote(String hostName, int port, boolean mono, String aes) {
+	public RemonRemote(String hostName, int port, boolean mono, String aes, String iv) {
 		this.hostName = hostName;
 		this.port = port;
 		this.mono = mono;
 		this.aes = aes;
+		this.iv = iv;
 	}
 
 	public void execute() {
@@ -37,7 +39,7 @@ public class RemonRemote {
 			Thread receiver = new Thread(new CommandReceiver(socket));
 			receiver.start();
 			Thread sender = new Thread(
-					mono ? new Sender(socket, commandReceiver, aes) : new ImageSender(socket, commandReceiver));
+					mono ? new Sender(socket, commandReceiver, aes, iv) : new ImageSender(socket, commandReceiver));
 			sender.start();
 		} catch (Exception e2) {
 			e2.printStackTrace();

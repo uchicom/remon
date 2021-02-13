@@ -8,14 +8,12 @@ public class EncryptionService {
 
 	private static final String ALGORITHM = "AES/CBC/PKCS5Padding";
 
-	private static final String INIT_VECTOR = "testvector123456";
-
 	private final IvParameterSpec iv;
 	private final SecretKeySpec key;
 
-	public EncryptionService(String encryptKey) {
+	public EncryptionService(String encryptKey, String initVector) {
 		this.key = new SecretKeySpec(encryptKey.getBytes(), "AES");
-		this.iv = new IvParameterSpec(INIT_VECTOR.getBytes());
+		this.iv = new IvParameterSpec(initVector.getBytes());
 	}
 
 	public byte[] encrypt(byte[] target) throws Exception {
