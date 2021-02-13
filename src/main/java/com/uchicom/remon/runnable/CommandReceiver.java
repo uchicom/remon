@@ -5,6 +5,7 @@ package com.uchicom.remon.runnable;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
@@ -57,7 +58,12 @@ public class CommandReceiver implements Runnable {
 				case Constants.COMMAND_KEY_PRESS:
 					is.read(bytes, 0, 3);
 					if (key) {
-						robot.keyPress(getInt(bytes));
+						int keyCode = getInt(bytes);
+						if ((KeyEvent.CTRL_DOWN_MASK & keyCode) == KeyEvent.VK_BACK_SPACE) {
+							robot.keyPress(KeyEvent.VK_UNDERSCORE);
+						} else {
+							robot.keyPress(keyCode);
+						}
 					}
 					break;
 				case Constants.COMMAND_KEY_RELEASE:
