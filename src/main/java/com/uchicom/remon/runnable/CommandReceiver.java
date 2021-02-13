@@ -68,8 +68,10 @@ public class CommandReceiver implements Runnable {
 
 							StringSelection ss = new StringSelection("_");
 							clip.setContents(ss, ss);
-							robot.keyPress(KeyEvent.VK_V | KeyEvent.CTRL_DOWN_MASK);
-							robot.keyRelease(KeyEvent.VK_V | KeyEvent.CTRL_DOWN_MASK);
+							robot.keyPress(KeyEvent.CTRL_DOWN_MASK);
+							robot.keyPress(KeyEvent.VK_V);
+							robot.keyRelease(KeyEvent.VK_V);
+							robot.keyRelease(KeyEvent.CTRL_DOWN_MASK);
 						} else {
 							robot.keyPress(keyCode);
 						}
