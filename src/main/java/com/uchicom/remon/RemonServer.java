@@ -10,9 +10,6 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocketFactory;
-
 import com.uchicom.remon.runnable.CommandReceiver;
 import com.uchicom.remon.runnable.ImageSender;
 import com.uchicom.remon.runnable.Sender;
@@ -28,9 +25,6 @@ public class RemonServer {
 
 	private String hostName;
 	private int port;
-	private boolean ssl;
-//	private boolean udp;
-//	private boolean multicast;
 	private boolean mono;
 	private String aes;
 	private String iv;
@@ -38,27 +32,17 @@ public class RemonServer {
 	/**
 	 *
 	 */
-	public RemonServer(String hostName, int port, boolean ssl, boolean udp, boolean multicast, boolean mono, String aes, String iv) {
+	public RemonServer(String hostName, int port, boolean mono, String aes, String iv) {
 		this.hostName = hostName;
 		this.port = port;
-		this.ssl = ssl;
-//		this.udp = udp;
-//		this.multicast = multicast;
 		this.mono = mono;
 		this.aes = aes;
 		this.iv = iv;
 	}
 
 	public void execute() {
-		ServerSocket server = null;
-		try {
-			if (ssl) {
-				SSLContext sslContext = SSLContext.getDefault();
-				SSLServerSocketFactory ssf = sslContext.getServerSocketFactory();
-				server = ssf.createServerSocket();
-			} else {
-				server = new ServerSocket();
-			}
+		try (ServerSocket server = new ServerSocket()) {
+
 			server.bind(new InetSocketAddress(hostName, port));
 			print();
 			while (true) {
@@ -69,7 +53,8 @@ public class RemonServer {
 				Thread receiverT = new Thread(receiver);
 				receiverT.setDaemon(true);
 				receiverT.start();
-				Thread sender = new Thread(mono ? new Sender(socket, receiver, aes, iv) : new ImageSender(socket, receiver));
+				Thread sender = new Thread(
+						mono ? new Sender(socket, receiver, aes, iv) : new ImageSender(socket, receiver));
 				sender.setDaemon(true);
 				sender.start();
 

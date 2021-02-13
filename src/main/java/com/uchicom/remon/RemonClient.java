@@ -24,9 +24,6 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -68,7 +65,6 @@ public class RemonClient extends JFrame {
 	private JCheckBoxMenuItem checkbox2;
 
 	private Map<JScrollPane, ImageReceiver> receiverMap = new HashMap<>();
-	private boolean ssl;
 	private boolean mono;
 	private int delay = 100;
 	private String aes;
@@ -78,9 +74,8 @@ public class RemonClient extends JFrame {
 		super(gc);
 	}
 
-	public RemonClient(boolean ssl, boolean mono, String aes, String iv) {
+	public RemonClient(boolean mono, String aes, String iv) {
 		super("Remon");
-		this.ssl = ssl;
 		this.mono = mono;
 		this.aes = aes;
 		this.iv = iv;
@@ -300,14 +295,8 @@ public class RemonClient extends JFrame {
 	public void connect(String hostName, int port) {
 
 		try {
-			if (ssl) {
-				SSLContext sslContext = SSLContext.getDefault();
-				SSLSocketFactory sf = sslContext.getSocketFactory();
-				socket = sf.createSocket(hostName, port);
-				((SSLSocket)socket).startHandshake();
-			} else {
-				socket = new Socket(hostName, port);
-			}
+			socket = new Socket(hostName, port);
+
 			ImagePanel panel = new ImagePanel();
 			JScrollPane scrollPane = new JScrollPane(panel);
 
