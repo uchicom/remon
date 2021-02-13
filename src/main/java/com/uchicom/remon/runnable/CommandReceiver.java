@@ -5,6 +5,9 @@ package com.uchicom.remon.runnable;
 
 import java.awt.AWTException;
 import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,8 +62,14 @@ public class CommandReceiver implements Runnable {
 					is.read(bytes, 0, 3);
 					if (key) {
 						int keyCode = getInt(bytes);
-						if ((KeyEvent.SHIFT_DOWN_MASK & KeyEvent.VK_0) == keyCode) {
-							robot.keyPress(KeyEvent.VK_UNDERSCORE);
+						if (keyCode == KeyEvent.VK_UNDERSCORE) {
+							Toolkit kit = Toolkit.getDefaultToolkit();
+							Clipboard clip = kit.getSystemClipboard();
+
+							StringSelection ss = new StringSelection("_");
+							clip.setContents(ss, ss);
+							robot.keyPress(KeyEvent.VK_V | KeyEvent.CTRL_DOWN_MASK);
+							robot.keyRelease(KeyEvent.VK_V | KeyEvent.CTRL_DOWN_MASK);
 						} else {
 							robot.keyPress(keyCode);
 						}
@@ -135,6 +144,7 @@ public class CommandReceiver implements Runnable {
 	public int getInt(byte[] bytes) {
 		return ((bytes[0] & 0xFF) | ((bytes[1] & 0xFF) << 8) | ((bytes[2] & 0xFF) << 16));
 	}
+
 	public boolean getBoolean(int value) {
 		return value != 0;
 	}
@@ -142,12 +152,15 @@ public class CommandReceiver implements Runnable {
 	public Integer getImageKind() {
 		return imageKind;
 	}
+
 	public int getDelay() {
 		return delay;
 	}
+
 	public int getSendKind() {
 		return sendKind;
 	}
+
 	public int getExtractKind() {
 		return extractKind;
 	}
