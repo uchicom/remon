@@ -59,7 +59,7 @@ public class CommandReceiver implements Runnable {
 					is.read(bytes, 0, 3);
 					if (key) {
 						int keyCode = getInt(bytes);
-						if ((KeyEvent.CTRL_DOWN_MASK & keyCode) == KeyEvent.VK_BACK_SPACE) {
+						if ((KeyEvent.SHIFT_DOWN_MASK & KeyEvent.VK_0) == keyCode) {
 							robot.keyPress(KeyEvent.VK_UNDERSCORE);
 						} else {
 							robot.keyPress(keyCode);
