@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import com.uchicom.remon.Constants;
 import com.uchicom.remon.runnable.Througher;
@@ -23,6 +25,8 @@ public class RemonThrough {
 	private String hostName;
 	private int receivePort;
 	private int sendPort;
+	private Queue<Socket> sendQueue = new ArrayBlockingQueue<>(16);
+	private Queue<Socket> receiveQueue = new ArrayBlockingQueue<>(16);
 
 	/**
 	 *
@@ -34,39 +38,72 @@ public class RemonThrough {
 	}
 
 	public void execute() {
-		ServerSocket receiveServer;
-		ServerSocket sendServer;
-		try {
-			sendServer = new ServerSocket();
+
+		try (final ServerSocket receiveServer = new ServerSocket();
+				final ServerSocket sendServer = new ServerSocket()) {
+
 			sendServer.bind(new InetSocketAddress(hostName, sendPort));
-			receiveServer = new ServerSocket();
 			receiveServer.bind(new InetSocketAddress(hostName, receivePort));
-			Socket sendSocket = null;
-			Socket receiveSocket = null;
-			while (true) {
-				if (sendSocket == null || sendSocket.isClosed()) {
-					sendSocket = sendServer.accept();
-					if (Constants.DEBUG) System.out.println("send接続");
-					if (receiveSocket != null && receiveSocket.isConnected()) {
-						start(receiveSocket, sendSocket);
-					}
-				} else if (receiveSocket == null || receiveSocket.isClosed()) {
-					receiveSocket = receiveServer.accept();
-					if (Constants.DEBUG) System.out.println("receive接続");
-					if (sendSocket != null && sendSocket.isConnected()) {
-						start(receiveSocket, sendSocket);
-					}
-				} else {
+
+			Thread sendThread = new Thread(() -> {
+				while (true) {
 					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO 自動生成された catch ブロック
+						sendQueue.add(sendServer.accept());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
+				}
+			});
+			sendThread.setDaemon(true);
+			sendThread.start();
+			Thread receiveThread = new Thread(() -> {
+				while (true) {
+					try {
+						receiveQueue.add(receiveServer.accept());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			});
+			receiveThread.setDaemon(true);
+			receiveThread.start();
+			// キューチェック処理
+			while (true) {
+				try {
+					if (sendQueue.peek() == null) {
+						Thread.sleep(500);
+						continue;
+					}
+					if (receiveQueue.peek() == null) {
+						Thread.sleep(500);
+						continue;
+					}
+					start(receiveQueue.poll(), sendQueue.poll());
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			sendQueue.forEach(socket->{
+				try {
+					socket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
+			receiveQueue.forEach(socket->{
+				try {
+					socket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			});
 		}
 	}
 
@@ -75,11 +112,13 @@ public class RemonThrough {
 		Thread remoteThrougher = new Thread(new Througher(receiveSocket, sendSocket));
 		remoteThrougher.setDaemon(true);
 		remoteThrougher.start();
-		if (Constants.DEBUG) System.out.println("send起動");
+		if (Constants.DEBUG)
+			System.out.println("send起動");
 
 		Thread localThrougher = new Thread(new Througher(sendSocket, receiveSocket));
 		localThrougher.setDaemon(true);
 		localThrougher.start();
-		if (Constants.DEBUG) System.out.println("receive起動");
+		if (Constants.DEBUG)
+			System.out.println("receive起動");
 	}
 }
