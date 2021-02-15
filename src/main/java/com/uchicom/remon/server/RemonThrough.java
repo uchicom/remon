@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.uchicom.remon.Constants;
 import com.uchicom.remon.runnable.Througher;
@@ -25,16 +29,24 @@ public class RemonThrough {
 	private String hostName;
 	private int receivePort;
 	private int sendPort;
-	private Queue<Socket> sendQueue = new ArrayBlockingQueue<>(16);
-	private Queue<Socket> receiveQueue = new ArrayBlockingQueue<>(16);
+	private ConcurrentHashMap<String, Queue<Socket>> sendQueueMap = new ConcurrentHashMap<>();
+	private ConcurrentHashMap<String, Queue<Socket>> receiveQueueMap = new ConcurrentHashMap<>();
+
+	private Map<String, String> ipMap = new HashMap<>();
 
 	/**
 	 *
 	 */
-	public RemonThrough(String hostName, int receivePort, int sendPort) {
+	public RemonThrough(String hostName, int receivePort, int sendPort, String ip) {
 		this.hostName = hostName;
 		this.receivePort = receivePort;
 		this.sendPort = sendPort;
+		if (ip != null && ip.length() > 0) {
+			Arrays.stream(ip.split(",")).forEach(ipPair -> {
+				String[] ips = ipPair.split("-");
+				ipMap.put(ips[0], ips[1]);
+			});
+		}
 	}
 
 	public void execute() {
@@ -48,9 +60,9 @@ public class RemonThrough {
 			Thread sendThread = new Thread(() -> {
 				while (true) {
 					try {
-						sendQueue.add(sendServer.accept());
+						Socket socket = sendServer.accept();
+						accept(sendQueueMap, socket);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -60,9 +72,9 @@ public class RemonThrough {
 			Thread receiveThread = new Thread(() -> {
 				while (true) {
 					try {
-						receiveQueue.add(receiveServer.accept());
+						Socket socket = receiveServer.accept();
+						accept(receiveQueueMap, socket);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -72,15 +84,24 @@ public class RemonThrough {
 			// キューチェック処理
 			while (true) {
 				try {
-					if (sendQueue.peek() == null) {
-						Thread.sleep(500);
-						continue;
-					}
-					if (receiveQueue.peek() == null) {
-						Thread.sleep(500);
-						continue;
-					}
-					start(receiveQueue.poll(), sendQueue.poll());
+					ipMap.forEach((key, value) -> {
+						if (!sendQueueMap.containsKey(key)) {
+							return;
+						}
+						if (!receiveQueueMap.containsKey(value)) {
+							return;
+						}
+						Queue<Socket> sendQueue = sendQueueMap.get(key);
+						if (sendQueue.peek() == null) {
+							return;
+						}
+						Queue<Socket> receiveQueue = receiveQueueMap.get(value);
+						if (receiveQueue.peek() == null) {
+							return;
+						}
+						start(receiveQueue.poll(), sendQueue.poll());
+					});
+					Thread.sleep(500);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -88,25 +109,17 @@ public class RemonThrough {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-			sendQueue.forEach(socket->{
-				try {
-					socket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
-			receiveQueue.forEach(socket->{
-				try {
-					socket.close();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			});
+			close(sendQueueMap);
+			close(receiveQueueMap);
 		}
 	}
 
+	/**
+	 * 通信開始処理.
+	 * 
+	 * @param receiveSocket 受信ソケット
+	 * @param sendSocket 送信ソケット
+	 */
 	public void start(Socket receiveSocket, Socket sendSocket) {
 
 		Thread remoteThrougher = new Thread(new Througher(receiveSocket, sendSocket));
@@ -120,5 +133,38 @@ public class RemonThrough {
 		localThrougher.start();
 		if (Constants.DEBUG)
 			System.out.println("receive起動");
+	}
+
+	/**
+	 * ソケットの保持処理.
+	 * 
+	 * @param socketQueueMap ソケットキューマップ
+	 * @param socket         ソケット
+	 */
+	public static void accept(ConcurrentHashMap<String, Queue<Socket>> socketQueueMap, Socket socket) {
+		String hostAddress = socket.getInetAddress().getHostAddress();
+		Queue<Socket> socketQueue = null;
+		if (socketQueueMap.containsKey(hostAddress)) {
+			socketQueue = socketQueueMap.get(hostAddress);
+		} else {
+			socketQueue = new ArrayBlockingQueue<>(16);
+			socketQueueMap.put(hostAddress, socketQueue);
+		}
+		socketQueue.add(socket);
+	}
+
+	/**
+	 * 保持ソケットのクローズ処理.
+	 * 
+	 * @param socketQueueMap ソケットキューマップ
+	 */
+	public static void close(ConcurrentHashMap<String, Queue<Socket>> socketQueueMap) {
+		socketQueueMap.forEach((ip, socketQueue) -> socketQueue.forEach(socket -> {
+			try {
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}));
 	}
 }

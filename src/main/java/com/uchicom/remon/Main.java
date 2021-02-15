@@ -29,6 +29,7 @@ public class Main {
 		boolean mono = false;
 		String aes = null;
 		String iv = null;
+		String ip = null;
 		String host = null;
 		int port = 10000;
 		int sendPort = 10000;
@@ -92,7 +93,14 @@ public class Main {
 						throw new RuntimeException("iv length is not 16.");
 					}
 				} else {
-					System.err.println("aes error");
+					System.err.println("iv error");
+				}
+				break;
+			case "-ip":
+				if (++i < args.length) {
+					ip = args[i];
+				} else {
+					System.err.println("ip error");
 				}
 				break;
 			}
@@ -104,7 +112,7 @@ public class Main {
 			RemonRemote remonRemote = new RemonRemote(host, port, mono, aes, iv);
 			remonRemote.execute();
 		} else if (through) {
-			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort);
+			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort, ip);
 			remonThrough.execute();
 		} else {
 			final boolean mono2 = mono;
