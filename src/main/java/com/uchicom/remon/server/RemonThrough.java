@@ -61,7 +61,11 @@ public class RemonThrough {
 				while (true) {
 					try {
 						Socket socket = sendServer.accept();
-						accept(sendQueueMap, socket);
+						if (ipMap.containsKey(socket.getInetAddress().getHostAddress())) {
+							accept(sendQueueMap, socket);
+						} else {
+							socket.close();
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -73,7 +77,11 @@ public class RemonThrough {
 				while (true) {
 					try {
 						Socket socket = receiveServer.accept();
-						accept(receiveQueueMap, socket);
+						if (ipMap.containsValue(socket.getInetAddress().getHostAddress())) {
+							accept(receiveQueueMap, socket);
+						} else {
+							socket.close();
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
