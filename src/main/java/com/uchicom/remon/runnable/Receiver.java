@@ -1,6 +1,4 @@
-/**
- * (c) 2016 uchicom
- */
+// (c) 2020 uchicom
 package com.uchicom.remon.runnable;
 
 import java.io.IOException;

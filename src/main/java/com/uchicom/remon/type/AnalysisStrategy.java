@@ -1,4 +1,4 @@
-// (c) 2019 uchicom
+// (c) 2020 uchicom
 package com.uchicom.remon.type;
 
 import java.util.Arrays;
