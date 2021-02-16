@@ -1,4 +1,4 @@
 // (c) 2021 uchicom
-module space {
+module com.uchicom.remon {
 	requires java.desktop;
 }
