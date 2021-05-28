@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import javax.swing.SwingUtilities;
 
 import com.uchicom.remon.client.RemonClient;
+import com.uchicom.remon.server.RemonForward;
 import com.uchicom.remon.server.RemonRemote;
 import com.uchicom.remon.server.RemonServer;
 import com.uchicom.remon.server.RemonThrough;
@@ -25,6 +26,7 @@ public class Main {
 		boolean remote = false;
 		boolean through = false;
 		boolean mono = false;
+		boolean forward = false;
 		String aes = null;
 		String iv = null;
 		String ip = null;
@@ -32,6 +34,8 @@ public class Main {
 		int port = 10000;
 		int sendPort = 10000;
 		int receivePort = 10001;
+		String forwardHost = "localhost";
+		int forwardPort = 22;
 		for (int i = 0; i < args.length; i++) {
 			switch (args[i]) {
 			case "-server":
@@ -61,18 +65,36 @@ public class Main {
 				if (++i < args.length) {
 					sendPort = Integer.parseInt(args[i]);
 				} else {
-					System.err.println("port error");
+					System.err.println("send port error");
 				}
 				break;
 			case "-receivePort":
 				if (++i < args.length) {
 					receivePort = Integer.parseInt(args[i]);
 				} else {
-					System.err.println("port error");
+					System.err.println("receive port error");
 				}
 				break;
 			case "-mono":
 				mono = true;
+				break;
+			case "-forward":
+				forward = true;
+				break;
+			case "--host":
+				if (forward && ++i < args.length) {
+					forwardHost = args[i];
+				} else {
+					System.err.println("foward host error");
+				}
+				forward = true;
+				break;
+			case "--port":
+				if (forward && ++i < args.length) {
+					receivePort = Integer.parseInt(args[i]);
+				} else {
+					System.err.println("foward port error");
+				}
 				break;
 			case "-aes":
 				if (++i < args.length) {
@@ -112,6 +134,9 @@ public class Main {
 		} else if (through) {
 			RemonThrough remonThrough = new RemonThrough(host, receivePort, sendPort, ip);
 			remonThrough.execute();
+		} else if (forward) {
+			RemonForward remonForward = new RemonForward(host, port, forwardHost, forwardPort);
+			remonForward.execute();
 		} else {
 			final boolean mono2 = mono;
 			final String aes2 = aes;
