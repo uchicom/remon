@@ -59,7 +59,7 @@ public class RemonThrough {
 				while (true) {
 					try {
 						Socket socket = sendServer.accept();
-						if (ipMap.containsKey(socket.getInetAddress().getHostAddress())) {
+						if (ipMap.isEmpty() || ipMap.containsKey(socket.getInetAddress().getHostAddress())) {
 							accept(sendQueueMap, socket);
 						} else {
 							socket.close();
@@ -75,7 +75,7 @@ public class RemonThrough {
 				while (true) {
 					try {
 						Socket socket = receiveServer.accept();
-						if (ipMap.containsValue(socket.getInetAddress().getHostAddress())) {
+						if (ipMap.isEmpty() || ipMap.containsValue(socket.getInetAddress().getHostAddress())) {
 							accept(receiveQueueMap, socket);
 						} else {
 							socket.close();
