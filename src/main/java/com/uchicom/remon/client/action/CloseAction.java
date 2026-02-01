@@ -1,40 +1,35 @@
-// (c) 2016 uchicom
+// (C) 2016 uchicom
 package com.uchicom.remon.client.action;
 
-import java.awt.event.ActionEvent;
-
-import javax.swing.AbstractAction;
-
 import com.uchicom.remon.client.RemonClient;
+import java.awt.event.ActionEvent;
+import javax.swing.AbstractAction;
 
 /**
  * 切断アクション.
  *
  * @author uchicom: Shigeki Uchiyama
- *
  */
 public class CloseAction extends AbstractAction {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private RemonClient client;
+  /** */
+  private static final long serialVersionUID = 1L;
 
-	/**
-	 * @param name
-	 */
-	public CloseAction(RemonClient client) {
-		super("切断");
-		this.client = client;
-	}
+  private RemonClient client;
 
-	/* (非 Javadoc)
-	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-	 */
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		client.close();
-	}
+  /**
+   * @param name
+   */
+  public CloseAction(RemonClient client) {
+    super("切断");
+    this.client = client;
+  }
 
+  /* (非 Javadoc)
+   * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    client.close();
+  }
 }
